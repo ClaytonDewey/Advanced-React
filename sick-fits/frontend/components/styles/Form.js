@@ -38,6 +38,7 @@ const Form = styled.form`
   }
   button,
   input[type='submit'] {
+    cursor: pointer;
     width: auto;
     background: red;
     color: white;
