@@ -49,7 +49,7 @@ export default function CreateProduct() {
 
   return (
     <>
-      {error && <DisplayError />}
+      {error && <DisplayError error={error} />}
       <Form
         onSubmit={async (e) => {
           e.preventDefault();
