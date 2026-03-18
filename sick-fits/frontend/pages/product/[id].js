@@ -1,5 +1,5 @@
-import SingleProductPage from '../../components/SingleProduct';
+import SingleProduct from '../../components/SingleProduct';
 
-export default function SingleProduct({ query }) {
-  return <SingleProductPage id={query.id} />;
+export default function SingleProductPage({ query }) {
+  return <SingleProduct id={query.id} />;
 }
