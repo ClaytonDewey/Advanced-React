@@ -1,8 +1,8 @@
 import Head from 'next/head';
+import { useQuery } from '@apollo/client';
 import PaginationStyles from './styles/PaginationStyles';
 import Link from 'next/link';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/client';
 import DisplayError from './ErrorMessage';
 import { perPage } from '../config';
 
