@@ -47,7 +47,7 @@ export default function paginationField() {
       //
       // The other thing we can do is to return false from here, (network request)
     },
-    merg(existing, incoming, { args }) {
+    merge(existing, incoming, { args }) {
       const { skip, first } = args;
       // This runs when the Apollo client comes back from the network with our product
       // console.log(`Merging items from the network ${incoming.length}`);
