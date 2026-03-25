@@ -27,9 +27,13 @@ export default function Reset({ token }) {
     password: '',
     token,
   });
-  const [reset, { data, loading }] = useMutation(RESET_MUTATION, {
+  const [reset, { data, loading, error }] = useMutation(RESET_MUTATION, {
     variables: inputs,
   });
+  const successfulError = data?.redeemUserPasswordResetToken?.code
+    ? data?.redeemUserPasswordResetToken
+    : undefined;
+  console.log(error);
   async function handleSubmit(e) {
     e.preventDefault(); // stop the form from submitting
     console.log(inputs);
@@ -39,13 +43,10 @@ export default function Reset({ token }) {
     resetForm();
     // Send the email and password to the graphqlAPI
   }
-  const error = data?.redeemUserPasswordResetToken?.code
-    ? data?.redeemUserPasswordResetToken
-    : undefined;
   return (
     <Form method='POST' onSubmit={handleSubmit}>
       <h2>Reset Your Password</h2>
-      <Error error={error} />
+      <Error error={error || successfulError} />
       <fieldset>
         {data?.redeemUserPasswordResetToken === null && (
           <p>Success! You can now sign in</p>
