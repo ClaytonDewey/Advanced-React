@@ -11,7 +11,7 @@ export default function ResetPage({ query }) {
   }
   return (
     <div>
-      <Reset />
+      <Reset token={query?.token} />
     </div>
   );
 }
