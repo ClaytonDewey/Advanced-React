@@ -1,8 +1,8 @@
-import { resetIdCounter, useCombobox } from 'downshift';
-import { DropDown, DropDownItem, SearchStyles } from './styles/DropDown';
-import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/client';
+import { resetIdCounter, useCombobox } from 'downshift';
+import gql from 'graphql-tag';
 import debounce from 'lodash.debounce';
+import { DropDown, DropDownItem, SearchStyles } from './styles/DropDown';
 
 const SEARCH_PRODUCTS_QUERY = gql`
   query SEARCH_PRODUCTS_QUERY($searchTerm: String!) {
@@ -32,7 +32,7 @@ export default function Search() {
       fetchPolicy: 'no-cache',
     },
   );
-  console.log(data);
+  const items = data?.searchTerms || [];
   const findItemsButChill = debounce(findItems, 350);
   resetIdCounter();
   const { inputValue, getMenuProps, getInputProps, getComboboxProps } =
@@ -58,15 +58,21 @@ export default function Search() {
             type: 'search',
             placeholder: 'Search for an Item',
             id: 'search',
-            className: 'loading',
+            className: loading ? 'loading' : null,
           })}
         />
       </div>
       <DropDown {...getMenuProps()}>
-        <DropDownItem>hey</DropDownItem>
-        <DropDownItem>hey</DropDownItem>
-        <DropDownItem>hey</DropDownItem>
-        <DropDownItem>hey</DropDownItem>
+        {items.map((item) => (
+          <DropDownItem>
+            <img
+              src={item.photo.image.publicUrlTranformed}
+              alt={item.name}
+              width='50'
+            />
+            {item.name}
+          </DropDownItem>
+        ))}
       </DropDown>
     </SearchStyles>
   );
