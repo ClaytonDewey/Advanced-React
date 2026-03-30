@@ -3,6 +3,7 @@ import { resetIdCounter, useCombobox } from 'downshift';
 import gql from 'graphql-tag';
 import debounce from 'lodash.debounce';
 import { DropDown, DropDownItem, SearchStyles } from './styles/DropDown';
+import { useRouter } from 'next/dist/client/router';
 
 const SEARCH_PRODUCTS_QUERY = gql`
   query SEARCH_PRODUCTS_QUERY($searchTerm: String!) {
@@ -26,6 +27,7 @@ const SEARCH_PRODUCTS_QUERY = gql`
 `;
 
 export default function Search() {
+  const router = useRouter();
   const [findItems, { loading, data, error }] = useLazyQuery(
     SEARCH_PRODUCTS_QUERY,
     {
@@ -35,21 +37,33 @@ export default function Search() {
   const items = data?.searchTerms || [];
   const findItemsButChill = debounce(findItems, 350);
   resetIdCounter();
-  const { inputValue, getMenuProps, getInputProps, getComboboxProps } =
-    useCombobox({
-      items: [],
-      onInputValueChange() {
-        console.log('Input changed!');
-        findItemsButChill({
-          variables: {
-            searchTerm: inputValue,
-          },
-        });
-      },
-      onSelectedItemChange() {
-        console.log('Selected Item Changed!');
-      },
-    });
+  const {
+    isOpen,
+    inputValue,
+    getMenuProps,
+    getInputProps,
+    getComboboxProps,
+    getItemProps,
+    highlightedIndex,
+  } = useCombobox({
+    items,
+    onInputValueChange() {
+      console.log('Input changed!');
+      findItemsButChill({
+        variables: {
+          searchTerm: inputValue,
+        },
+      });
+    },
+    onSelectedItemChange({ selectedItem }) {
+      console.log(selectedItem);
+      router.push({
+        pathname: `/product/${selectedItem.id}`,
+      });
+      console.log('Selected Item Changed!');
+    },
+    itemToString: (item) => item?.name || '',
+  });
   return (
     <SearchStyles>
       <div {...getComboboxProps()}>
@@ -63,16 +77,23 @@ export default function Search() {
         />
       </div>
       <DropDown {...getMenuProps()}>
-        {items.map((item) => (
-          <DropDownItem>
-            <img
-              src={item.photo.image.publicUrlTranformed}
-              alt={item.name}
-              width='50'
-            />
-            {item.name}
-          </DropDownItem>
-        ))}
+        {isOpen &&
+          items.map((item, index) => (
+            <DropDownItem
+              key={item.id}
+              {...getItemProps({ item: item })}
+              highlighted={index === highlightedIndex}>
+              <img
+                src={item.photo.image.publicUrlTransformed}
+                alt={item.name}
+                width='50'
+              />
+              {item.name}
+            </DropDownItem>
+          ))}
+        {isOpen && !items.length && !loading && (
+          <DropDownItem>Sorry, Not items found for {inputValue}.</DropDownItem>
+        )}
       </DropDown>
     </SearchStyles>
   );
