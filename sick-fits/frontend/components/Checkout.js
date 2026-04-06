@@ -47,10 +47,12 @@ function CheckoutForm() {
     // 6. Change the page to view the order
     // 7. Close the cart
     // 8. Turn the loader off
+    setLoading(false);
+    nProgress.done();
   }
   return (
     <CheckoutFormStyles onSubmit={handleSubmit}>
-      {error && <p>{error.message}</p>}
+      {error && <p style={{ fontSize: 12 }}>{error.message}</p>}
       <CardElement />
       <SickButton>Check Out Now</SickButton>
     </CheckoutFormStyles>
