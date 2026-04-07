@@ -14,13 +14,15 @@ import { CartItem } from './schemas/CartItem';
 import { extendGraphqlSchema } from './mutations';
 import { OrderItem } from './schemas/OrderItem';
 import { Order } from './schemas/Order';
+import { Role } from './schemas/Role';
+import { permissionsList } from './schemas/fields';
 
 const databaseURL =
   process.env.DATABASE_URL || 'mongodb://localhost/keystone-sick-fits-tutorial';
 
 const sessionConfig = {
   maxAge: 60 * 60 * 24 * 360, // How long they stay signed in.
-  secret: process.env.COOKIE_SECRET,
+  secret: process.env.COOKIE_SECRET || 'default-secret-key',
 };
 
 const { withAuth } = createAuth({
@@ -43,7 +45,7 @@ export default withAuth(
   config({
     server: {
       cors: {
-        origin: [process.env.FRONTEND_URL],
+        origin: process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [],
         credentials: true,
       },
     },
@@ -63,6 +65,7 @@ export default withAuth(
       CartItem,
       OrderItem,
       Order,
+      Role,
     }),
     extendGraphqlSchema: extendGraphqlSchema,
     ui: {
@@ -73,7 +76,7 @@ export default withAuth(
     },
     session: withItemData(statelessSessions(sessionConfig), {
       // GraphQL Query
-      User: `id`,
+      User: `id name email role { ${permissionsList.join(' ')} }`,
     }),
   }),
 );
