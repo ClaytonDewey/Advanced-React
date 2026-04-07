@@ -48,14 +48,10 @@ async function checkout(
   });
   console.log(user, { depth: null });
   // 2. calc the total price for their order
-  const cartItems = user.cart.filter((cartItem) => cartItem.product);
-  const amount = cartItems.reduce(function (
-    tally: number,
-    cartItem: CartItemCreateInput,
-  ) {
-    return tally + cartItem.quantity * cartItem.product.price;
-  },
-  0);
+  const cartItems = user.cart.filter((cartItem: any) => cartItem.product);
+  const amount = cartItems.reduce(function (tally: number, cartItem: any) {
+    return tally + (cartItem.quantity ?? 0) * (cartItem.product?.price ?? 0);
+  }, 0);
   console.log(amount);
   // 3. create the payment with the stripe library
   const charge = await stripeConfig.paymentIntents
@@ -71,16 +67,21 @@ async function checkout(
     });
   console.log(charge);
   // 4. Convert the cartItems to OrderItems
-  const orderItems = cartItems.map((cartItem) => {
-    const orderItem = {
-      name: cartItem.product.name,
-      description: cartItem.product.description,
-      price: cartItem.product.price,
-      quantity: cartItem.quantity,
-      photo: { connect: { id: cartItem.product.photo.id } },
-    };
-    return orderItem;
-  });
+  const orderItems = cartItems.map(
+    (cartItem: {
+      product: { name: any; description: any; price: any; photo: { id: any } };
+      quantity: any;
+    }) => {
+      const orderItem = {
+        name: cartItem.product.name,
+        description: cartItem.product.description,
+        price: cartItem.product.price,
+        quantity: cartItem.quantity,
+        photo: { connect: { id: cartItem.product.photo.id } },
+      };
+      return orderItem;
+    },
+  );
   // 5. Create the order and return it
   const order = await context.lists.Order.createOne({
     data: {
@@ -91,7 +92,7 @@ async function checkout(
     },
   });
   // 6. clean up any old cart item
-  const cartItemIds = cartItems.map((cartItem) => cartItem.id);
+  const cartItemIds = user.cart.map((cartItem: { id: any }) => cartItem.id);
   await context.lists.CartItem.deleteMany({
     ids: cartItemIds,
   });
