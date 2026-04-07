@@ -18,9 +18,46 @@ const generatedPermissions = Object.fromEntries(
 // Permissions check if someone meeta a criteria - yes or no
 export const permissions = {
   ...generatedPermissions,
-  isAwesome({ session }: ListAccessArgs) {
-    return session?.data.name.includes('clay');
-  },
+  // isAwesome({ session }: ListAccessArgs) {
+  //   return session?.data.name.includes('clay');
+  // },
 };
 
 // Rule based function
+// Rules can return a boolean - yes or no - or filter which limits which products they can CRUD.
+export const rules = {
+  canManageProducts({ session }: ListAccessArgs) {
+    // 1. Do they have the permission of canManageProducts
+    if (permissions.canManageProducts({ session })) {
+      return true;
+    }
+    // 2. If not, do they own this item
+    return { user: { id: session?.itemId } };
+  },
+  canOrder({ session }: ListAccessArgs) {
+    if (!isSignedIn({ session })) {
+      return false;
+    }
+    // 1. Do they have the permission of canManageProducts
+    if (permissions.canManageCart({ session })) {
+      return true;
+    }
+    // 2. If not, do they own this item
+    return { user: { id: session?.itemId } };
+  },
+  canManageOrderItems({ session }: ListAccessArgs) {
+    // 1. Do they have the permission of canManageProducts
+    if (permissions.canManageCart({ session })) {
+      return true;
+    }
+    // 2. If not, do they own this item
+    return { order: { user: { id: session?.itemId } } };
+  },
+  canReadProducts({ session }: ListAccessArgs) {
+    if (permissions.canManageProducts({ session })) {
+      return true; // They can read everything!
+    }
+    // They should only see available products (based on the status field)
+    return { status: 'AVAILABLE' };
+  },
+};
