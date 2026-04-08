@@ -68,22 +68,3 @@ exports[`<Nav/> renders a full nav when signed in 1`] = `
   </ul>
 </div>
 `;
-
-exports[`<Nav/> renders the amount of items in the cart 1`] = `
-<div>
-  <ul
-    class="NavStyles-sc-11c0d2g-0 frBXib"
-  >
-    <a
-      href="/products"
-    >
-      Products
-    </a>
-    <a
-      href="/signin"
-    >
-      Sign In
-    </a>
-  </ul>
-</div>
-`;
