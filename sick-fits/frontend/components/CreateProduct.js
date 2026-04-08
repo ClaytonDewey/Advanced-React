@@ -35,7 +35,7 @@ export default function CreateProduct() {
   const { inputs, handleChange, clearForm } = useForm({
     image: '',
     name: '',
-    price: undefined,
+    price: 0,
     description: '',
   });
 
@@ -108,3 +108,5 @@ export default function CreateProduct() {
     </Form>
   );
 }
+
+export { CREATE_PRODUCT_MUTATION };
